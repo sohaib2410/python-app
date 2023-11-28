@@ -12,23 +12,19 @@ pipeline {
             }
         }
 
-        stage('Build') {
+        stage('Build Docker Image') {
             steps {
                 script {
-                    dir('file') {
-                        version = sh(script: 'git rev-parse --short HEAD', returnStdout: true).trim()
-                        sh "docker build -t sohaib2410/python-app:$version ."
-                    }
+                    docker.build("your-docker-username/python-app:latest", "-f Dockerfile .")
                 }
             }
         }
 
-        stage('Publish') {
+        stage('Push Docker Image') {
             steps {
                 script {
-                    docker.withRegistry('', registryCredential) {
-                        version = sh(script: 'git rev-parse --short HEAD', returnStdout: true).trim()
-                        sh "docker push sohaib2410/python-app:$version"
+                    docker.withRegistry('https://registry.hub.docker.com', 'dockerhub') {
+                        docker.image("your-docker-username/python-app:latest").push()
                     }
                 }
             }
